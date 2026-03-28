@@ -69,9 +69,15 @@ jobs:
             ## IPTV Player ${{ github.ref_name }}
 
             ### Installation
-            1. DMG herunterladen
-            2. Oeffnen und App in den Applications-Ordner ziehen
-            3. Beim ersten Start: Rechtsklick > Oeffnen (wegen fehlender Signierung)
+            1. DMG herunterladen und oeffnen
+            2. App in den Applications-Ordner ziehen
+            3. **Wichtig:** Terminal oeffnen und ausfuehren:
+            ```
+            xattr -cr "/Applications/IPTV Player.app"
+            ```
+            4. App starten
+
+            > Der Terminal-Befehl ist noetig, weil die App nicht mit einem Apple-Zertifikat signiert ist. macOS blockiert unsignierte Downloads standardmaessig.
 
             ### Voraussetzungen
             - macOS 14.0 (Sonoma) oder neuer
