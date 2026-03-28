@@ -1,0 +1,23 @@
+name: IPTV Player
+options:
+  bundleIdPrefix: com.iptv
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+targets:
+  IPTV:
+    type: application
+    platform: macOS
+    sources:
+      - IPTV
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.iptv.player
+        INFOPLIST_FILE: IPTV/Info.plist
+        CODE_SIGN_ENTITLEMENTS: IPTV/IPTV.entitlements
+        PRODUCT_NAME: "IPTV Player"
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        ENABLE_USER_SCRIPT_SANDBOXING: "NO"

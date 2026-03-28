@@ -1,0 +1,29 @@
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+*.xcscmblueprint
+*.xccheckout
+
+# CocoaPods (Podfile + Podfile.lock bleiben, Pods-Ordner nicht)
+Pods/
+
+# Build
+build/
+*.app
+*.dSYM.zip
+*.dSYM
+*.ipa
+*.dmg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Debug logs
+fehler.txt
+
+# Claude
+.claude/
