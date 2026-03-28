@@ -1,0 +1,76 @@
+name: Build & Release DMG
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install Tools
+        run: |
+          brew install xcodegen
+          sudo gem install cocoapods
+
+      - name: Generate Project
+        run: xcodegen generate
+
+      - name: Install Pods
+        run: pod install
+
+      - name: Build App
+        run: |
+          xcodebuild -workspace "IPTV Player.xcworkspace" \
+            -scheme IPTV \
+            -configuration Release \
+            -derivedDataPath build \
+            -arch arm64 -arch x86_64 \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Create DMG
+        run: |
+          APP_PATH="build/Build/Products/Release/IPTV Player.app"
+          DMG_NAME="IPTV-Player-${GITHUB_REF_NAME}.dmg"
+
+          # Temp-Ordner fuer DMG-Inhalt
+          mkdir -p dmg_content
+          cp -R "$APP_PATH" dmg_content/
+          ln -s /Applications dmg_content/Applications
+
+          # DMG erstellen
+          hdiutil create -volname "IPTV Player" \
+            -srcfolder dmg_content \
+            -ov -format UDZO \
+            "$DMG_NAME"
+
+          echo "DMG_NAME=$DMG_NAME" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "IPTV Player ${{ github.ref_name }}"
+          body: |
+            ## IPTV Player ${{ github.ref_name }}
+
+            ### Installation
+            1. DMG herunterladen
+            2. Oeffnen und App in den Applications-Ordner ziehen
+            3. Beim ersten Start: Rechtsklick > Oeffnen (wegen fehlender Signierung)
+
+            ### Voraussetzungen
+            - macOS 14.0 (Sonoma) oder neuer
+          files: ${{ env.DMG_NAME }}
+          draft: false
