@@ -33,15 +33,26 @@ jobs:
 
       - name: Build App
         run: |
+          # Version aus dem Tag ableiten (v1.0.1 -> 1.0.1)
+          VERSION="${GITHUB_REF_NAME#v}"
+
           xcodebuild -workspace "IPTV Player.xcworkspace" \
             -scheme IPTV \
             -configuration Release \
             -derivedDataPath build \
             -arch arm64 -arch x86_64 \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Verify Version
+        run: |
+          PLIST="build/Build/Products/Release/IPTV Player.app/Contents/Info.plist"
+          echo "Version: $(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST")"
+          echo "Build:   $(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST")"
 
       - name: Create DMG
         run: |
