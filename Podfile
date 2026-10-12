@@ -3,6 +3,7 @@ platform :macos, '14.0'
 target 'IPTV' do
   use_frameworks!
   pod 'VLCKit', '~> 3.6'
+  pod 'Sparkle', '~> 2.6'
 end
 
 post_install do |installer|

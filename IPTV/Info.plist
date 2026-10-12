@@ -20,6 +20,12 @@
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>LSMinimumSystemVersion</key>
     <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>SUFeedURL</key>
+    <string>https://github.com/CasX61/IPTV-Player-for-macOS/releases/latest/download/appcast.xml</string>
+    <key>SUPublicEDKey</key>
+    <string>3y99fK5YoCHECcQkClOUdl0qnG2dAQlsJYp3IiPq7nQ=</string>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>

@@ -1,16 +1,20 @@
 PODS:
+  - Sparkle (2.9.6)
   - VLCKit (3.7.3)
 
 DEPENDENCIES:
+  - Sparkle (~> 2.6)
   - VLCKit (~> 3.6)
 
 SPEC REPOS:
   trunk:
+    - Sparkle
     - VLCKit
 
 SPEC CHECKSUMS:
+  Sparkle: b8c9cf4ced217ffc708a1ca5f988a7ba877658db
   VLCKit: 4f2c462daaab6de88b93ab7609bdefbada557a4d
 
-PODFILE CHECKSUM: 4783ab747a305e70510b9df8ce7050ef1273a8f8
+PODFILE CHECKSUM: a7578bd1776e05e5f3924e98168442154f7f586c
 
 COCOAPODS: 1.16.2

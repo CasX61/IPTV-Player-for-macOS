@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # komplette History + Tags fuer die Versionshinweise
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -54,6 +56,13 @@ jobs:
           echo "Version: $(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST")"
           echo "Build:   $(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST")"
 
+      - name: Ad-hoc Sign App
+        run: |
+          # Gueltige (ad-hoc) Signatur, damit Sparkle das Update verifizieren kann
+          APP_PATH="build/Build/Products/Release/IPTV Player.app"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --deep --strict "$APP_PATH"
+
       - name: Create DMG
         run: |
           APP_PATH="build/Build/Products/Release/IPTV Player.app"
@@ -71,6 +80,27 @@ jobs:
             "$DMG_NAME"
 
           echo "DMG_NAME=$DMG_NAME" >> $GITHUB_ENV
+
+      - name: Create Appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          REPO_URL="https://github.com/${GITHUB_REPOSITORY}"
+
+          # Versionshinweise: Commits seit dem vorherigen Tag
+          PREV_TAG="$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)"
+          git log --no-merges --pretty=format:'%s' "${PREV_TAG:+$PREV_TAG..}${GITHUB_REF_NAME}" > notes.txt
+
+          scripts/make-appcast.sh \
+            "$DMG_NAME" \
+            "$VERSION" \
+            "${{ github.run_number }}" \
+            "$REPO_URL/releases/download/${GITHUB_REF_NAME}/${DMG_NAME}" \
+            "$REPO_URL/releases/tag/${GITHUB_REF_NAME}" \
+            notes.txt > appcast.xml
+
+          cat appcast.xml
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -90,7 +120,12 @@ jobs:
 
             > Der Terminal-Befehl ist noetig, weil die App nicht mit einem Apple-Zertifikat signiert ist. macOS blockiert unsignierte Downloads standardmaessig.
 
+            ### Updates
+            Ab Version 1.0.3 aktualisiert sich die App selbst (Menue "IPTV Player" → "Nach Updates suchen…"). Der Terminal-Befehl ist nur bei der Erstinstallation noetig.
+
             ### Voraussetzungen
             - macOS 14.0 (Sonoma) oder neuer
-          files: ${{ env.DMG_NAME }}
+          files: |
+            ${{ env.DMG_NAME }}
+            appcast.xml
           draft: false
