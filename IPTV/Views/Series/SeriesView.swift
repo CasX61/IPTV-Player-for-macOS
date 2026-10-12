@@ -176,29 +176,23 @@ struct SeriesView: View {
 
                         // Season picker
                         if !viewModel.seasons.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
+                            HStack(spacing: 12) {
+                                Picker("Staffel", selection: $viewModel.selectedSeason) {
                                     ForEach(viewModel.seasons, id: \.self) { season in
-                                        Button(action: { viewModel.selectedSeason = season }) {
-                                            Text("Staffel \(season)")
-                                                .font(.subheadline)
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 6)
-                                                .background(
-                                                    viewModel.selectedSeason == season
-                                                        ? Color.accentColor
-                                                        : Color.secondary.opacity(0.2)
-                                                )
-                                                .foregroundStyle(
-                                                    viewModel.selectedSeason == season
-                                                        ? .white
-                                                        : .primary
-                                                )
-                                                .clipShape(Capsule())
-                                        }
-                                        .buttonStyle(.plain)
+                                        Text("Staffel \(season)")
+                                            .tag(Optional(season))
                                     }
                                 }
+                                .pickerStyle(.menu)
+                                .labelsHidden()
+                                .fixedSize()
+
+                                let episodeCount = viewModel.currentEpisodes.count
+                                Text(episodeCount == 1 ? "1 Episode" : "\(episodeCount) Episoden")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+
+                                Spacer()
                             }
 
                             // Episode list
